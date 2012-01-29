@@ -27,7 +27,13 @@ src_install() {
 		elog "Installing peytz patched version of drush make"
 	fi
 
-	insinto /usr/share/drush/commands
-	doins -r contrib tests
+	insinto /usr/share/drush/commands/make
+	doins -r contrib
+
+	# Do we have a way of actually executing these tests?
+	#if use test; then
+	#  doins -r test
+	#fi
+
 	doins drush_make.drush.inc drush_make.project.inc drush_make.utilities.inc INSTALL.txt README.txt drush_make.download.inc drush_make.generate.inc drush_make.test.inc
 }
