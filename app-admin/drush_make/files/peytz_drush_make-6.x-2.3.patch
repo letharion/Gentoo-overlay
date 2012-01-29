@@ -1,0 +1,440 @@
+diff --git a/drush_make.download.inc b/drush_make.download.inc
+old mode 100644
+new mode 100755
+index 92c68f9..cd60a98
+--- a/drush_make.download.inc
++++ b/drush_make.download.inc
+@@ -419,15 +419,61 @@ function drush_make_download_git($name, $download, $download_location) {
+   
+   drush_make_mkdir($tmp_path . '/__git__/');
+   
+-  // clone the given repository
+-  if (drush_shell_exec("git clone %s %s", $url, $tmp_location)) {
++  $return = FALSE;
++  
++  // Get current directory (for move back later).
++  $cwd = getcwd();
++  
++  
++  // Instead of cloning the remote repositories each time we run
++  // drush make, we store a local cloned copy, we can re-use. This
++  // reduces the drush make time by 3-4 times.
++  
++  // The location to store the local copies of the cloned projects.
++  $local_make_cache_location = '/var/tmp/drush_make_cache/';
++  
++  // Create the projects cache dir.
++  if (!is_dir(rtrim($local_make_cache_location, '/'))) {
++    chdir(dirname(rtrim($local_make_cache_location, '/')));
++    drush_make_mkdir(basename(rtrim($local_make_cache_location, '/')));
++    // jln_TODO: fix chown
++    
++    chdir($cwd);
++    drush_log(dt('Created drush_make_cache dir %drush_make_cache_dir for storing local copies of the git repositories.', array('%drush_make_cache_dir' => $local_make_cache_location)));
++  }
++  
++  $working_on_local_copy = FALSE;
++  
++  // If we have a .git dir, we just pull the latest changes and
++  // copies it to the expected temp directory.
++  if (is_dir($local_make_cache_location . $name . '/.git')) {
++    chdir($local_make_cache_location . $name);
++    drush_shell_exec("git pull --tags");
++  
++    // Copy the git repository to the tmp location.
++    $working_on_local_copy = drush_shell_exec('rsync -a %s %s', $local_make_cache_location . $name, dirname($tmp_location));
++  }
++  else {
++    chdir(dirname($local_make_cache_location));
++    
++    // Make sure, that no directory exists to block our git clone.
++    drush_shell_exec("rm -rf %s", $name);
++    
++    if (drush_shell_exec("git clone %s %s", $url, $local_make_cache_location . $name)) {
++      // Copy the git repository to the tmp location.
++      $working_on_local_copy = drush_shell_exec('rsync -a %s %s', $local_make_cache_location . $name, dirname($tmp_location));
++    }
++  }
++  // Reset to the current directory to erase our tracks.
++  chdir($cwd);
++  
++  // Clone the given repository.
++  if ($working_on_local_copy || drush_shell_exec("git clone %s %s", $url, $tmp_location)) {
+     drush_log(dt('%project cloned from %url.', array('%project' => $name, '%url' => $url)), 'ok');
+   
+     // GIT Checkout only work on a ready cloned repo. So we switch to branch or to tag (only if we have no branch) after cloneing.
+     if ($download['branch'] !== 'master' || $download['tag'] || $download['revision'] || !empty($download['submodule'])) {
+   
+-      // get current directory (for move back later)
+-      $cwd = getcwd();
+       // change path to working copy of cloned repo
+       chdir($tmp_location);
+   
+@@ -436,9 +482,11 @@ function drush_make_download_git($name, $download, $download_location) {
+       if ($download['branch'] !== 'master' && !$download['tag'] && !$download['revision']) {
+         if (drush_shell_exec("git checkout %s", $download['branch'])) {
+           drush_log(dt("Checked out branch %branch.", array('%branch' => $download['branch'])), 'ok');
++          $return = TRUE;
+         }
+         elseif (drush_shell_exec("git checkout -b %s %s", $download['branch'], 'origin/' . $download['branch'])) {
+           drush_log(dt("Checked out branch %branch.", array('%branch' => $download['branch'])), 'ok');
++          $return = TRUE;
+         }
+         else {
+           drush_make_error('DOWNLOAD_ERROR', dt("Unable to check out branch %branch.", array('%branch' => $download['branch'])));
+@@ -449,6 +497,7 @@ function drush_make_download_git($name, $download, $download_location) {
+         // @TODO: change checkout to refs path
+         if (drush_shell_exec("git checkout %s", 'refs/tags/' . $download['tag'])) {
+           drush_log(dt("Checked out tag %tag.", array('%tag' => $download['tag'])), 'ok');
++          $return = TRUE;
+         }
+         else {
+           drush_make_error('DOWNLOAD_ERROR', dt("Unable to check out tag %tag.", array('%tag' => $download['tag'])));
+@@ -458,6 +507,7 @@ function drush_make_download_git($name, $download, $download_location) {
+       elseif ($download['branch'] == 'master' && !$download['tag'] && $download['revision']) {
+         if (drush_shell_exec("git checkout %s", $download['revision'])) {
+           drush_log(dt("Checked out revision %revision.", array('%revision' => $download['revision'])), 'ok');
++          $return = TRUE;
+         }
+         else {
+           drush_make_error('DOWNLOAD_ERROR', dt("Unable to checkout revision %revision", array('%revision' => $download['revision'])));
+@@ -475,6 +525,7 @@ function drush_make_download_git($name, $download, $download_location) {
+         }
+         if (call_user_func_array('drush_shell_exec', array_merge(array($command), $download['submodule']))) {
+           drush_log(dt('Initialized registered submodules.'), 'ok');
++          $return = TRUE;
+         }
+         else {
+           drush_make_error('DOWNLOAD_ERROR', dt('Unable to initialize submodules.'));
+@@ -490,7 +541,7 @@ function drush_make_download_git($name, $download, $download_location) {
+     }
+     drush_shell_exec('cp -Rf %s %s', $tmp_location, dirname($download_location));
+     drush_shell_exec("rm -rf %s", dirname($tmp_location));
+-    return dirname($tmp_location);
++    return $return ? dirname($tmp_location) : $return;
+   }
+   else {
+     drush_make_error('DOWNLOAD_ERROR', dt('Unable to clone %project from %url.', array('%project' => $name, '%url' => $url)));
+diff --git a/drush_make.drush.inc b/drush_make.drush.inc
+old mode 100644
+new mode 100755
+index c8a9b42..85d3399
+--- a/drush_make.drush.inc
++++ b/drush_make.drush.inc
+@@ -1,5 +1,28 @@
+ <?php
+ 
++/**
++ * Patch - jln@peytz.dk
++ *
++ * The drush_make patch both improves and adds new critical
++ * features to the drush make routine.
++ * - Local copy of git projects to save time when doing checkouts.
++ *   Reduces times 3-4 times!
++ * - Failed patches makes the routine break with exit(1).
++ * - Failed projects makes the route break with exit(1).
++ * - When using working copies, we re-use the existing projects if
++ *   the are already checked out. This saves a huge amount of time
++ *   and lets people work on the projects without having to worry
++ *   about their changes being overwritten!
++ * - When not using the working copy and projects are just flat
++ *   files, the projects are automatically deleted to make room for
++ *   the new copy.
++ * - If any directories unknown to the .make file is found, a list
++ *   of these are printed out at the bottom of the report.
++ *
++ * Requirements:
++ *   The /var/tmp must reachable for these changes to work.
++ */
++
+ define('DRUSH_MAKE_UPDATE_DEFAULT_URL', 'http://updates.drupal.org/release-history');
+ define('DRUSH_MAKE_VERSION_BEST', 'best');
+ define('DRUSH_MAKE_API', 2);
+@@ -110,12 +133,138 @@ function drush_drush_make_make($makefile = NULL, $build_path = NULL) {
+     return FALSE;
+   }
+ 
+-  if (drush_make_projects(FALSE, drush_get_option('contrib-destination', 'sites/all'), $info, $build_path)) {
++  $return = drush_make_projects(FALSE, drush_get_option('contrib-destination', 'sites/all'), $info, $build_path);
++  if ($return === TRUE || drush_get_option('force-complete')) {
++    // TODO: drush_make_libraries() should also return TRUE on success and 1 on failure.
+     drush_make_libraries(drush_get_option('contrib-destination', 'sites/all'), $info, $build_path);
+ 
+     if (drush_get_option('prepare-install')) {
+       drush_make_prepare_install($build_path);
+     }
++    
++    $locations_existing = _drush_make_get_dirs_to_scan();
++    
++    if (!empty($locations_existing)) {
++      drush_print('===============================');
++      drush_print(dt("Unknown directories found:\n-------------------------------\n%unknown_locations", array('%unknown_locations' => '? ' . implode("\n? ", $locations_existing))));
++      drush_print('===============================');
++    }
++  }
++  
++  return $return;
++}
++
++/**
++ * Returns the target location for the given project.
++ * @param $project
++ *  Object, the project we are fetching.
++ * @param $include_project_name
++ *  Boolean: Should we append the project name.
++ * @return
++ *  String path.
++ */
++function _drush_make_get_target_location($project, $include_project_name = TRUE) {
++  $path = array();
++  
++  if (!empty($project->contrib_destination)) {
++    $path[] = $project->contrib_destination;
++  }
++  if (!empty($project->subdir)) {
++    $path[] = $project->subdir;
++  }
++  
++  if ($include_project_name) {
++    $path[] = (!empty($project->directory_name) ? $project->directory_name : $project->name);
++  }
++  
++  return implode('/', $path);
++}
++
++/**
++ * Search for directories in all the given target locations.
++ * We use this to make a list of unknown directories when all is done.
++ * @param $projects
++ *  Array of projects to fetch.
++ * @param $reset_dirs
++ *  If given, the input dirs will replace the existing dirs stored
++ *  in the static variable.
++ * @return
++ *  Array of directories.
++ */
++function _drush_make_get_dirs_to_scan($projects = NULL, $reset_dirs = NULL) {
++  static $dirs = array();
++  
++  if (!is_null($reset_dirs)) {
++    $dirs = $reset_dirs;
++  }
++  
++  if (is_null($projects)) {
++    return $dirs;
++  }
++  
++  // Find the parent directories for each project.
++  $locations_to_scan = array();
++  foreach ($projects as $project) {
++    $location = _drush_make_get_target_location($project, FALSE);
++    $locations_to_scan[$location] = $location;
++  }
++  
++  // Run through the known locations and find all sibling
++  // directories of the targetlocations of the projects we are
++  // about to fetch.
++  foreach ($locations_to_scan as $dir) {
++    // Do not include these in the list.
++    $mask = array(
++      '.',
++      '..',
++      'CVS',
++      '.git',
++    );
++    
++    if (is_dir($dir) && $handle = opendir($dir)) {
++      while (FALSE !== ($file = readdir($handle))) {
++        if (is_dir("$dir/$file") && !in_array($file, $mask)) {
++          $dirs["$dir/$file"] = "$dir/$file";
++        }
++      }
++      closedir($handle);
++    }
++  }
++  
++  return $dirs;
++}
++
++/**
++ * Filter out paths found in _drush_make_get_dirs_to_scan() which
++ * matches the beginning of the given destination.
++ * @param &$locations
++ *  Array of locations.
++ * @param $destination
++ *  The destination string to ue in search.
++ */
++function _drush_make_identify_location(&$locations, $destination) {
++  foreach ($locations as $key => $location) {
++    // Make sure we also remove any paths which is at a higher level
++    // than this one.
++    if (strpos($destination, $location) === 0) {
++      unset($locations[$key]);
++    }
++  }
++}
++
++/**
++ * Removes any existing files (if it is not a git checkout) which
++ * otherwise would be in the way.
++ * @param $project
++ *  Object, the project we are fetching.
++ */
++function _drush_make_clean_up_project($project) {
++  $destination = _drush_make_get_target_location($project);
++  // @TODO: This is only compatible with git...
++  if ((!empty($project->download['type']) && $project->download['type'] != 'git') || !is_dir($destination . '/.git')) {
++    if (is_dir($destination) && drush_shell_exec('rm -rf %s', $destination)) {
++      drush_log(dt('Deleted %destination to make room for %project_name', array('%destination' => $destination, '%project_name' => $project->name)), 'ok');
++    }
+   }
+ }
+ 
+@@ -224,15 +373,36 @@ function drush_make_projects($recursion, $contrib_destination, $info, $build_pat
+ 
+   if (isset($projects['core'])) {
+     foreach ($projects['core'] as $project) {
+-      $project->make();
++      $response = $project->make();
++      if (empty($response) && !drush_get_option('force-complete')) {
++        drush_make_clean_tmp();
++        return 1;
++      }
+     }
+   }
+ 
+   if (isset($projects['contrib'])) {
++    $locations_existing = _drush_make_get_dirs_to_scan($projects['contrib']);
+     foreach ($projects['contrib'] as $project) {
+-      $project->make();
++      if (drush_get_context('DRUSH_VERBOSE') || drush_get_context('DRUSH_SIMULATE')) {
++        drush_print('-------------------------------');
++      }
++      // Clean/delete all destinations which is not a git checkout.
++      _drush_make_clean_up_project($project);
++      
++      $response = $project->make();
++      
++      if (empty($response) && !drush_get_option('force-complete')) {
++        drush_make_clean_tmp();
++        return 1;
++      }
++      
++      $destination = _drush_make_get_target_location($project);
++      _drush_make_identify_location($locations_existing, $destination);
+     }
++    _drush_make_get_dirs_to_scan(NULL, $locations_existing);
+   }
++  
+   return TRUE;
+ }
+ 
+@@ -240,6 +410,7 @@ function drush_make_libraries($contrib_destination, $info, $build_path) {
+   if (empty($info['libraries'])) {
+     return;
+   }
++  $libraries = array();
+   $ignore_checksums = drush_get_option('ignore-checksums');
+   foreach ($info['libraries'] as $key => $library) {
+     if (!is_string($key) || !is_array($library)) {
+@@ -258,8 +429,24 @@ function drush_make_libraries($contrib_destination, $info, $build_path) {
+     if ($ignore_checksums) {
+       unset($library['download']['md5']);
+     }
+-    $class = DrushMakeProject::getInstance('library', $library);
+-    $class->make();
++    //$class = DrushMakeProject::getInstance('library', $library);
++    $libraries[] = DrushMakeProject::getInstance('library', $library);
++  }
++  
++  $locations_existing = _drush_make_get_dirs_to_scan($libraries);
++  foreach ($libraries as $library) {
++    if (drush_get_context('DRUSH_VERBOSE') || drush_get_context('DRUSH_SIMULATE')) {
++      drush_print('-------------------------------');
++    }
++    // Clean/delete all destinations which is not a git checkout.
++    _drush_make_clean_up_project($library);
++    
++    $library->make();
++    
++    $destination = _drush_make_get_target_location($library);
++    _drush_make_identify_location($locations_existing, $destination);
++    
++    _drush_make_get_dirs_to_scan(NULL, $locations_existing);
+   }
+ }
+ 
+@@ -419,7 +606,9 @@ function drush_make_move_build($build_path) {
+     drush_shell_exec('ls -A %s', $tmp_path . '/__build__');
+     $info = drush_shell_exec_output();
+     foreach ($info as $file) {
+-      $ret = $ret && drush_shell_exec("cp -Rf %s %s", $tmp_path . '/__build__/' . $file, $build_path);
++      if (file_exists($tmp_path . '/__build__/' . $file)) {
++        $ret = $ret && drush_shell_exec("cp -Rf %s %s", $tmp_path . '/__build__/' . $file, $build_path);
++      }
+     }
+   }
+   else {
+diff --git a/drush_make.generate.inc b/drush_make.generate.inc
+old mode 100644
+new mode 100755
+diff --git a/drush_make.project.inc b/drush_make.project.inc
+old mode 100644
+new mode 100755
+index 76b71b2..21293f1
+--- a/drush_make.project.inc
++++ b/drush_make.project.inc
+@@ -54,6 +54,44 @@ class DrushMakeProject {
+       return TRUE;
+     }
+     $this->made = TRUE;
++    
++    // Get current directory.
++    $cwd = getcwd();
++    
++    // Get project target directory.
++    $project_directory = $this->generatePath(FALSE) . '/' . (!empty($this->directory_name) ? $this->directory_name : $this->name);
++    
++    // Check if it exists. If it does, check if we have a working git clone.
++    // By letting the make routine use git, we make sure, that any changes to
++    // projects are not overwritten or destroyed.
++    // It also greatly speeds up the make routine.
++    if (is_dir($project_directory) && !empty($this->download['tag']) && is_dir($cwd . '/' . $project_directory . '/.git')) {
++      // Change path to working copy of cloned repo
++      chdir($cwd . '/' . $project_directory);
++      
++      // Check if it is a drupal-org project. If so, we can assume that the code related to the tags are not obsolete.
++      $drupal_org_project = (!empty($this->download) && empty($this->download['url']) && $this->download['type'] == 'git');
++      
++      // Try to fetch the latest updates through "git fetch" and execute the "git checkout <tag>".
++      if ($drupal_org_project && drush_shell_exec("git checkout %s", $this->download['tag']) || (drush_shell_exec("git fetch") && drush_shell_exec("git checkout %s", $this->download['tag']))) {
++        drush_log(dt("Checked out tag %tag for %project", array('%tag' => $this->download['tag'], '%project' => $project_directory)), 'ok');
++        // Reset the working directory.
++        chdir($cwd);
++      }
++      else {
++        // If it failed, the drush_shell_exec_output() will provide usefull hints as to why it failed.
++        $error = drush_shell_exec_output();
++        if (!empty($error)) {
++          drush_print(trim(implode("\n", $error)));
++        }
++        drush_set_error(dt("Failed to check out tag %tag for %project", array('%tag' => $this->download['tag'], '%project' => $project_directory)));
++        // Reset the working directory.
++        chdir($cwd);
++        return FALSE;
++      }
++      
++      return TRUE;
++    }
+ 
+     $download_location = $this->findDownloadLocation();
+     if (drush_make_download_factory($this->name, $this->download, $download_location) === FALSE) {
+@@ -146,6 +184,8 @@ class DrushMakeProject {
+         }
+         else {
+           drush_make_error('PATCH_ERROR', dt("Unable to patch @name with @filename.", $dt_args));
++          drush_op('unlink', $filename);
++          return FALSE;
+         }
+         drush_op('unlink', $filename);
+       }
