@@ -14,7 +14,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE=""
 
-DEPEND="app-admin/drush"
+DEPEND="<app-admin/drush-4.5.9999"
 RDEPEND="${DEPEND}"
 S="${WORKDIR}/${PN}"
 
