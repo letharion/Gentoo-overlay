@@ -18,7 +18,20 @@ RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/phplint-pure-c-${PV/p/}"
 
+src_configure() {
+	#Stub, as the compile step will do configuration.
+	echo -n;
+}
+
+src_compile() {
+	./compile
+}
+
 src_install() {
-	exeinto /usr/bin
-	doexe phpl
+	rm -rf modules/CVS
+
+	exeinto /usr/share/phplint
+	insinto /usr/share/phplint
+	doexe src/phplint
+	doins -r modules
 }
