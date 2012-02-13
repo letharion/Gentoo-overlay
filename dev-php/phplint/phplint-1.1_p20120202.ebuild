@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-EAPI=4
+EAPI=3
 
 DESCRIPTION=""
 HOMEPAGE=""
@@ -19,12 +19,6 @@ RDEPEND="${DEPEND}"
 S="${WORKDIR}/phplint-pure-c-${PV/p/}"
 
 src_install() {
-ls
-ls
-	echo ${S}
-	echo ${S}
-	echo ${S}
-	echo ${S}
-	echo ${S}
-	echo ${S}
+	exeinto /usr/bin
+	doexe phpl
 }
