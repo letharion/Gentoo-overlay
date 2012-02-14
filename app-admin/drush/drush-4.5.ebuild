@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="examples"
 
-DEPEND="dev-lang/php[cli,simplexml] dev-php/pear"
+DEPEND="dev-lang/php[cli,simplexml]
+	>=dev-php/PEAR-Console_Table-1.1.3"
 RDEPEND="${DEPEND}"
 S="${WORKDIR}/${PN}"
 
