@@ -17,7 +17,8 @@ DEPEND="app-admin/drush
 dev-db/mysql
 dev-lang/php
 net-proxy/squid
-www-servers/apache"
+www-servers/apache
+www-servers/varnish"
 
 RDEPEND="${DEPEND}"
 
