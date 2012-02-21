@@ -7,8 +7,7 @@ inherit eutils games
 
 DESCRIPTION="OpenTTD is a clone of Transport Tycoon Deluxe"
 HOMEPAGE="http://www.openttd.org/"
-SRC_URI="http://binaries.openttd.org/releases/${PV/_/-}/${P/_/-}-source.tar.gz"
-#SRC_URI="http://binaries.openttd.org/releases/1.2.0-beta4/openttd-1.2.0-beta4-source.tar.gz
+SRC_URI="http://binaries.openttd.org/releases/${PV/_rc/-RC}/${P/_rc/-RC}-source.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -41,14 +40,10 @@ PDEPEND="
 	openmedia? ( games-misc/opengfx )
 	"
 #PATCHES=( "${FILESDIR}"/${P}-cflags.patch )
-S=/var/tmp/portage/games-simulation/openttd-1.2.0_beta4/work/openttd-1.2.0-beta4
+S=/var/tmp/portage/games-simulation/openttd-1.2.0_rc1/work/openttd-1.2.0-RC1
+#S="${S/_rc1$/-RC1$}"
 
 src_configure() {
-	echo
-	echo $S
-	pwd
-	ls -l
-	echo
 	# there is an allegro interface available as well as sdl, but
 	# the configure for it looks broken so the sdl interface is
 	# always built instead.
