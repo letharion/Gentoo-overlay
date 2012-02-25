@@ -18,7 +18,8 @@ dev-db/mysql
 dev-lang/php
 net-proxy/squid
 www-servers/apache
-www-servers/varnish"
+www-servers/varnish
+dev-util/drupalcs"
 
 RDEPEND="${DEPEND}"
 
