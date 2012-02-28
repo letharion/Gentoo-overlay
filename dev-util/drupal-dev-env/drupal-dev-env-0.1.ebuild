@@ -15,11 +15,9 @@ IUSE=""
 
 DEPEND="app-admin/drush
 dev-db/mysql
-dev-lang/php
+dev-lang/php[apache2]
 net-proxy/squid
-www-servers/apache
 www-servers/varnish
 dev-util/drupalcs"
 
 RDEPEND="${DEPEND}"
-
