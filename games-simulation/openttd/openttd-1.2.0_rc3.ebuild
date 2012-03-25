@@ -40,7 +40,7 @@ PDEPEND="
 	openmedia? ( games-misc/opengfx )
 	"
 #PATCHES=( "${FILESDIR}"/${P}-cflags.patch )
-S=/var/tmp/portage/games-simulation/openttd-1.2.0_rc1/work/openttd-1.2.0-RC1
+S=/var/tmp/portage/games-simulation/openttd-1.2.0_rc3/work/openttd-1.2.0-RC3
 #S="${S/_rc1$/-RC1$}"
 
 src_configure() {
