@@ -1,0 +1,32 @@
+--- http/apache/server.tpl.php	2012-04-22 11:52:48.379528606 +0200
++++ http/apache/server.tpl.php	2012-05-22 14:08:19.005850314 +0200
+@@ -1,8 +1,5 @@
+ # Aegir web server configuration file
+ 
+-NameVirtualHost *:<?php print $http_port; ?>
+-
+-
+ <VirtualHost *:<?php print $http_port; ?>>
+   ServerName default
+   Redirect 404 /
+@@ -19,16 +16,16 @@
+ 
+ # other configuration, not touched by aegir
+ # this allows you to override aegir configuration, as it is included before
+-Include <?php print $http_pred_path ?>
++IncludeOptional <?php print $http_pred_path . '/*' ?>
+ 
+ # virtual hosts
+-Include <?php print $http_vhostd_path ?>
++IncludeOptional <?php print $http_vhostd_path . '/*' ?>
+ 
+ # platforms
+-Include <?php print $http_platformd_path ?>
++IncludeOptional <?php print $http_platformd_path . '/*' ?>
+ 
+ # other configuration, not touched by aegir
+ # this allows to have default (for example during migrations) that are eventually overriden by aegir
+-Include <?php print $http_postd_path ?>
++IncludeOptional <?php print $http_postd_path . '/*' ?>
+ 
+ <?php print $extra_config; ?>
