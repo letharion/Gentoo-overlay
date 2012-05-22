@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE="peytz"
 
-DEPEND="<app-admin/drush-4.5.9999"
+DEPEND="<app-admin/drush-5"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${PN}"
