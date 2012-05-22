@@ -23,6 +23,7 @@ S="${WORKDIR}/${PN}"
 src_prepare() {
 	if use apache24 ; then
 		epatch ${FILESDIR}/apache24_server_tpl_php.patch
+		epatch ${FILESDIR}/apache24_platform_tpl_php.patch
 	fi
 }
 
