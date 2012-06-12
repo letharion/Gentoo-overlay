@@ -27,6 +27,8 @@ src_install() {
 		elog "Installing peytz patched version of drush make"
 	fi
 
+	epatch "${FILESDIR}"/adapt-to-release-history-xml.patch
+
 	insinto /usr/share/drush/commands/make
 	doins -r contrib
 
