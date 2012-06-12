@@ -16,7 +16,8 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE="peytz"
 
-DEPEND="<app-admin/drush-4.5.9999"
+# Drush make is a part of Drush 5
+DEPEND="<app-admin/drush-5"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${PN}"
