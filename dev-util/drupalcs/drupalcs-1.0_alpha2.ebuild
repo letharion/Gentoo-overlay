@@ -16,7 +16,7 @@ IUSE=""
 DEPEND="dev-php/PEAR-PHP_CodeSniffer"
 RDEPEND="${DEPEND}"
 
-S=/var/tmp/portage/dev-util/drupalcs-7.0/work/drupalcs
+S=/var/tmp/portage/dev-util/drupalcs-${PV}/work/drupalcs
 
 src_install() {
 	insinto /usr/share/php/PHP/CodeSniffer/Standards/
