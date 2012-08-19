@@ -21,6 +21,7 @@ dev-lang/php[apache2]
 	>=app-admin/drush-5
 )
 www-servers/varnish
+dev-php/pecl-uploadprogress
 dev-util/drupalcs"
 
 RDEPEND="${DEPEND}"
