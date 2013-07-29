@@ -1,0 +1,14 @@
+diff --git a/src/runtime/base/server/libevent_server.h b/src/runtime/base/server/libevent_server.h
+index e0812ca..2fb7f23 100644
+--- a/src/runtime/base/server/libevent_server.h
++++ b/src/runtime/base/server/libevent_server.h
+@@ -173,6 +173,9 @@ protected:
+ 
+   int m_accept_sock;
+   int m_accept_sock_ssl;
++  struct evhttp_bound_socket *evhttp_sock;
++  struct evhttp_bound_socket *evhttp_sock_ssl;
++
+   event_base *m_eventBase;
+   evhttp *m_server;
+ 
