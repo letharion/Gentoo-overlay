@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/app-admin/drush/drush-4.4.ebuild,v 1.1 2011/05/26 22:22:01 ramereth Exp $
 
-EAPI="4"
+EAPI="5"
 
 DESCRIPTION="Drush is a command line shell and scripting interface for Drupal"
 HOMEPAGE="http://drupal.org/project/drush"
