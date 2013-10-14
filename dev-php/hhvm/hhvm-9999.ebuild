@@ -1,42 +1,18 @@
-<<<<<<< HEAD
-# Copyright 1999-2012 Gentoo Foundation
-=======
 # Copyright 1999-2013 Gentoo Foundation
->>>>>>> Copy the old hiphop ebuild to a newer hhvm one. Update ebuilds to work better with hhvm.
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
 EAPI=5
 
-<<<<<<< HEAD
-DESCRIPTION="HHVM, very fast php JIT"
-HOMEPAGE=""
-SRC_URI=""
-
-LICENSE=""
-=======
 DESCRIPTION="HHVM, fast PHP JIT runtime"
 HOMEPAGE="https://github.com/facebook/hiphop-php"
 # SRC_URI="https://github.com/facebook/hiphop-php/archive/HPHP-${PV}.tar.gz"
 
 LICENSE="PHP-3.01"
->>>>>>> Copy the old hiphop ebuild to a newer hhvm one. Update ebuilds to work better with hhvm.
 SLOT="0"
 KEYWORDS="~amd64"
 IUSE=""
 
-<<<<<<< HEAD
-DEPEND=" dev-libs/libevent[hiphop]
->=net-misc/curl-7.28
-dev-cpp/glog
->=dev-libs/jemalloc-3
-dev-libs/libmemcached
-sys-libs/libunwind
->=dev-libs/libmemcached-0.39
-"
-
-RDEPEND="${DEPEND}"
-=======
 # Uncertain dependencies
 # libcurl4-openssl-dev
 # php5-mcrypt php5-imagick
@@ -76,4 +52,3 @@ S="${D}/hiphop-php-HPHP"
 src_compile() {
   ls -lha
 }
->>>>>>> Copy the old hiphop ebuild to a newer hhvm one. Update ebuilds to work better with hhvm.
