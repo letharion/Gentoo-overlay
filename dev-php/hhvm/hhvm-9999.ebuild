@@ -4,14 +4,16 @@
 
 EAPI=5
 
+inherit eutils cmake-utils git-2
+
 DESCRIPTION="HHVM, fast PHP JIT runtime"
-HOMEPAGE="https://github.com/facebook/hiphop-php"
-# SRC_URI="https://github.com/facebook/hiphop-php/archive/HPHP-${PV}.tar.gz"
+HOMEPAGE="https://github.com/facebook/hhvm"
+EGIT_REPO_URI="https://github.com/facebook/hhvm.git"
 
 LICENSE="PHP-3.01"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE=""
+IUSE="gentoo"
 
 # Uncertain dependencies
 # libcurl4-openssl-dev
@@ -32,7 +34,6 @@ dev-libs/libpcre
 dev-libs/libxml2
 dev-libs/oniguruma
 dev-libs/openssl
-dev-util/cmake
 dev-util/google-perftools
 media-libs/gd[jpeg,png]
 net-libs/c-client
@@ -47,8 +48,44 @@ sys-libs/zlib"
 
 RDEPEND="${DEPEND}"
 
-S="${D}/hiphop-php-HPHP"
+S="${WORKDIR}/hhvm-${PV}"
+CMAKE_IN_SOURCE_BUILD="true"
 
-src_compile() {
-  ls -lha
+src_prepare() {
+	epatch "${FILESDIR}"/libdwarf_location.patch
+}
+
+src_configure() {
+	export HPHP_HOME=$(pwd)
+
+	mkdir customs
+
+	export CMAKE_PREFIX_PATH=$(pwd)
+	export LIBRARY_PATH="/usr/include/libdwarf/"
+
+	cd customs
+	git clone git://github.com/libevent/libevent.git
+	cd libevent
+	git checkout release-1.4.14b-stable
+	cat ../../hphp/third_party/libevent-1.4.14.fb-changes.diff | patch -p1
+	./autogen.sh
+	./configure --prefix=$CMAKE_PREFIX_PATH
+	make
+	make install
+	cd ../..
+
+	if use gentoo; then
+		cmake-utils_src_configure
+	else
+		cmake .
+	fi
+}
+
+src_install() {
+	dobin "${FILESDIR}"/hhvm
+	exeinto /usr/share/hhvm
+	doexe hphp/hhvm/hhvm
+
+	insinto /usr/share/hhvm
+	doins lib/libevent-1.4.so.2*
 }
