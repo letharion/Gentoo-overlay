@@ -8,7 +8,7 @@ inherit eutils cmake-utils
 
 DESCRIPTION="HHVM, fast PHP JIT runtime"
 HOMEPAGE="https://github.com/facebook/hhvm"
-SRC_URI="https://codeload.github.com/facebook/${PN}/tar.gz/HHVM-${PV} -> ${P}.tar.gz"
+SRC_URI="https://github.com/facebook/${PN}/archive/HPHP-${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="PHP-3.01"
 SLOT="0"
