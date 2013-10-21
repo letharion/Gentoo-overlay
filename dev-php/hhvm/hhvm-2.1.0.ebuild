@@ -28,6 +28,7 @@ dev-libs/cloog-ppl
 dev-libs/elfutils
 dev-libs/icu
 dev-libs/jemalloc[stats]
+dev-libs/libdwarf
 dev-libs/libmcrypt
 <=dev-libs/libmemcached-1.0.7
 dev-libs/libpcre
