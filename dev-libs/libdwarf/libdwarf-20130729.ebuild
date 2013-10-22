@@ -8,7 +8,7 @@ inherit flag-o-matic
 
 DESCRIPTION="Library to deal with DWARF Debugging Information Format"
 HOMEPAGE="http://reality.sgiweb.org/davea/dwarf.html"
-SRC_URI="http://reality.sgiweb.org/davea/${P}.tar.gz"
+SRC_URI="https://dl.dropboxusercontent.com/s/41hw1hdigkxhp2z/libdwarf-20130729.tar.gz?token_hash=AAEodR1picyDA-xZoi9xmDJb5eHPFm4SUIO3MoiKfwoLOg&dl=1 -> ${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
@@ -22,9 +22,8 @@ S=${WORKDIR}/dwarf-${PV}/${PN}
 
 pkg_pretend() {
 	ewarn "At the time of writing, the website for downloading libdwarf sources"
-	ewarn "appear to be down. This overlay contains a 'scripts' directory. If necessary, run"
-	ewarn "scripts/libdwarf.sh ${PV}-b ${PV}"
-	ewarn "to generate a new libdwarf distributable file from git."
+	ewarn "appear to be down. This ebuild currently points to my private"
+	ewarn "dropbox account"
 }
 
 src_prepare() {
