@@ -50,6 +50,7 @@ sys-libs/zlib"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/hhvm-HHVM-${PV}"
+CMAKE_IN_SOURCE_BUILD="true"
 
 src_prepare() {
 	epatch "${FILESDIR}"/libdwarf_location.patch
