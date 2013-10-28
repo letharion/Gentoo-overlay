@@ -49,7 +49,7 @@ sys-libs/zlib"
 
 RDEPEND="${DEPEND}"
 
-S="${WORKDIR}/hhvm-HHVM-${PV}"
+S="${WORKDIR}/hhvm-HPHP-${PV}"
 
 src_prepare() {
 	epatch "${FILESDIR}"/libdwarf_location.patch
