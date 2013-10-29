@@ -9,6 +9,7 @@ inherit eutils cmake-utils git-2
 DESCRIPTION="HHVM, fast PHP JIT runtime"
 HOMEPAGE="https://github.com/facebook/hhvm"
 EGIT_REPO_URI="https://github.com/facebook/hhvm.git"
+EGIT_HAS_SUBMODULES="true"
 
 LICENSE="PHP-3.01"
 SLOT="0"
@@ -37,7 +38,7 @@ dev-libs/oniguruma
 dev-libs/openssl
 dev-util/google-perftools
 media-libs/gd[jpeg,png]
-net-libs/c-client
+net-libs/c-client[kerberos]
 net-nds/openldap
 sys-devel/gcc[cxx]
 sys-devel/binutils
@@ -54,6 +55,7 @@ CMAKE_IN_SOURCE_BUILD="true"
 
 src_prepare() {
 	epatch "${FILESDIR}"/libdwarf_location.patch
+	epatch "${FILESDIR}"/cmake_oniguruma_avoid_collision.patch
 }
 
 src_configure() {
