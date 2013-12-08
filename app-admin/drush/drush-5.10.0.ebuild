@@ -1,24 +1,24 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/app-admin/drush/drush-4.4.ebuild,v 1.1 2011/05/26 22:22:01 ramereth Exp $
+# $Header: /var/cvsroot/gentoo-x86/app-admin/drush/drush-5.8.ebuild,v 1.3 2013/03/25 20:52:50 ago Exp $
 
 EAPI="5"
 
 inherit bash-completion-r1
 
 DESCRIPTION="Drush is a command line shell and scripting interface for Drupal"
-HOMEPAGE="http://drupal.org/project/drush"
-SRC_URI="http://ftp.drupal.org/files/projects/${PN}-8.x-${PV/_/-}.tar.gz"
+HOMEPAGE="http://pear.drush.org/"
+SRC_URI="https://github.com/drush-ops/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 IUSE="+examples"
 
 DEPEND="dev-lang/php[cli,simplexml]
-	>=dev-php/PEAR-Console_Table-1.1.3"
+	dev-php/PEAR-Console_Table
+	dev-php/PEAR-Console_Getopt"
 RDEPEND="${DEPEND}"
-S="${WORKDIR}/${PN}"
 
 src_prepare() {
 	sed -i -e \
@@ -38,20 +38,14 @@ src_prepare() {
 }
 
 src_install() {
-	local docs="README.txt docs"
+	local docs="README.md docs"
 	use examples && docs="${docs} examples"
-
 	insinto /usr/share/drush
 	doins -r .
 	exeinto /usr/share/drush
 	doexe drush
 	dosym /usr/share/drush/drush /usr/bin/drush
 	dodoc -r ${docs}
-	# cleanup
-	for i in ${docs} LICENSE.txt drush.bat examples includes/.gitignore ; do
-		rm -rf "${D}/usr/share/drush/${i}"
-	done
-
 	# cleanup
 	for i in ${docs} LICENSE.txt drush.bat examples includes/.gitignore \
 		.gitignore .travis.yml drush.complete.sh ; do
