@@ -6,11 +6,11 @@ EAPI=5
 
 DESCRIPTION="Composer is a PHP package manager"
 HOMEPAGE="http://getcomposer.org"
-SRC_URI="http://getcomposer.org/download/${PV/_/-}/${PN}.phar"
+SRC_URI="http://getcomposer.org/download/${PV/_/-}/${PN}.phar -> ${P}.phar"
 
 LICENSE=""
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm"
 IUSE=""
 
 DEPEND="dev-lang/php[phar]"
@@ -22,7 +22,7 @@ src_unpack() {
 }
 
 src_prepare() {
-	cp "../../distdir/composer.phar" composer
+	cp "../../distdir/${P}.phar" composer
 }
 
 src_install() {
