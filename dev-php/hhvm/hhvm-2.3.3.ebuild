@@ -13,7 +13,7 @@ SRC_URI="https://codeload.github.com/facebook/${PN}/tar.gz/HHVM-${PV} -> ${P}.ta
 LICENSE="PHP-3.01"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE="+gentoo"
+IUSE="debug +gentoo"
 
 DEPEND="app-arch/bzip2
 dev-cpp/glog
@@ -78,6 +78,12 @@ src_configure() {
 	cd folly
 	git checkout 8e8b5e7
 	cd ../../..
+
+	if use debug; then
+		CMAKE_BUILD_TYPE="Debug"
+	else
+		CMAKE_BUILD_TYPE="Release"
+	fi
 
 	if use gentoo; then
 		cmake-utils_src_configure
