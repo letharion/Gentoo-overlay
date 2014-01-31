@@ -11,8 +11,12 @@ fi
 
 DESCRIPTION="HHVM, fast PHP JIT runtime"
 HOMEPAGE="https://github.com/facebook/hhvm"
-EGIT_REPO_URI="https://github.com/facebook/hhvm.git"
-EGIT_HAS_SUBMODULES="true"
+if [ ${PV} = "9999" ]; then
+	EGIT_REPO_URI="https://github.com/facebook/hhvm.git"
+	EGIT_HAS_SUBMODULES="true"
+else
+	SRC_URI="https://codeload.github.com/facebook/${PN}/tar.gz/HHVM-${PV} -> ${P}.tar.gz"
+fi
 
 LICENSE="PHP-3.01"
 SLOT="0"
@@ -48,12 +52,19 @@ sys-libs/readline
 sys-libs/zlib"
 
 RDEPEND="${DEPEND}"
-
-S="${WORKDIR}/hhvm-${PV}"
 CMAKE_IN_SOURCE_BUILD="true"
+
+if [ ${PV} = "9999" ]; then
+	S="${WORKDIR}/hhvm-${PV}"
+else
+	S="${WORKDIR}/hhvm-HHVM-${PV}"
+fi
 
 src_prepare() {
 	epatch "${FILESDIR}"/libdwarf_location.patch
+	if [ ! ${PV} = "9999" ]; then
+		epatch "${FILESDIR}"/cmake_oniguruma_avoid_collision.patch
+	fi
 }
 
 src_configure() {
