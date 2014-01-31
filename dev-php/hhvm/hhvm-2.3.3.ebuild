@@ -33,7 +33,7 @@ dev-libs/oniguruma
 dev-libs/openssl
 dev-util/google-perftools
 media-libs/gd[jpeg,png]
-net-libs/c-client
+net-libs/c-client[kerberos]
 net-nds/openldap
 sys-devel/gcc[cxx]
 sys-devel/binutils
