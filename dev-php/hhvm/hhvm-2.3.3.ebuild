@@ -7,7 +7,7 @@ EAPI=5
 inherit eutils cmake-utils
 
 DESCRIPTION="HHVM, fast PHP JIT runtime"
-HOMEPAGE="https://github.com/facebook/hiphop-php"
+HOMEPAGE="https://github.com/facebook/hhvm"
 SRC_URI="https://codeload.github.com/facebook/${PN}/tar.gz/HHVM-${PV} -> ${P}.tar.gz"
 
 LICENSE="PHP-3.01"
