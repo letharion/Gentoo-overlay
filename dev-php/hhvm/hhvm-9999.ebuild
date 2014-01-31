@@ -1,10 +1,13 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
 EAPI=5
 
-inherit eutils cmake-utils git-2
+inherit eutils cmake-utils
+if [ ${PV} = "9999" ]; then
+	inherit git-2
+fi
 
 DESCRIPTION="HHVM, fast PHP JIT runtime"
 HOMEPAGE="https://github.com/facebook/hhvm"
@@ -14,11 +17,7 @@ EGIT_HAS_SUBMODULES="true"
 LICENSE="PHP-3.01"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE="gentoo"
-
-# Uncertain dependencies
-# libcurl4-openssl-dev
-# php5-mcrypt php5-imagick
+IUSE="debug +gentoo"
 
 DEPEND="app-arch/bzip2
 dev-cpp/glog
@@ -55,7 +54,6 @@ CMAKE_IN_SOURCE_BUILD="true"
 
 src_prepare() {
 	epatch "${FILESDIR}"/libdwarf_location.patch
-	epatch "${FILESDIR}"/cmake_oniguruma_avoid_collision.patch
 }
 
 src_configure() {
@@ -76,6 +74,19 @@ src_configure() {
 	make
 	make install
 	cd ../..
+
+	# Get folly. Move folly to a separate package later.
+	cd hphp/submodules || die
+	git clone https://github.com/facebook/folly.git
+	cd folly
+	git checkout a247c8d
+	cd ../../..
+
+	if use debug; then
+		CMAKE_BUILD_TYPE="Debug"
+	else
+		CMAKE_BUILD_TYPE="Release"
+	fi
 
 	if use gentoo; then
 		cmake-utils_src_configure
