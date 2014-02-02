@@ -1,4 +1,4 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -75,7 +75,7 @@ src_configure() {
 	make install
 	cd ../..
 
-    # Get folly. Move folly to a separate package later.
+	# Get folly. Move folly to a separate package later.
 	cd hphp/submodules || die
 	git clone https://github.com/facebook/folly.git
 	cd folly
