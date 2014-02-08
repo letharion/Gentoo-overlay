@@ -21,7 +21,7 @@ fi
 LICENSE="PHP-3.01"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE="debug +gentoo"
+IUSE="debug"
 
 DEPEND="app-arch/bzip2
 dev-cpp/glog
@@ -99,11 +99,7 @@ src_configure() {
 		CMAKE_BUILD_TYPE="Release"
 	fi
 
-	if use gentoo; then
-		cmake-utils_src_configure
-	else
-		cmake .
-	fi
+	cmake-utils_src_configure
 }
 
 src_install() {
