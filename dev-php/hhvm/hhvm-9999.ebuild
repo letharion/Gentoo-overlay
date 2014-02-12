@@ -90,7 +90,7 @@ src_configure() {
 	cd hphp/submodules || die
 	git clone https://github.com/facebook/folly.git
 	cd folly
-	git checkout a247c8d
+	git checkout 5e8ce83
 	cd ../../..
 
 	if use debug; then
