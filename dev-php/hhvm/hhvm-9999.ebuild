@@ -86,13 +86,6 @@ src_configure() {
 	make install
 	cd ../..
 
-	# Get folly. Move folly to a separate package later.
-	cd hphp/submodules || die
-	git clone https://github.com/facebook/folly.git
-	cd folly
-	git checkout 5e8ce83
-	cd ../../..
-
 	if use debug; then
 		CMAKE_BUILD_TYPE="Debug"
 	else
