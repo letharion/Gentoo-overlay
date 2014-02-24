@@ -90,6 +90,15 @@ src_configure() {
 	make install
 	cd ../..
 
+	if [ ! ${PV} = "9999" ]; then
+		# Get folly. Move folly to a separate package later.
+		cd hphp/submodules || die
+		git clone https://github.com/facebook/folly.git
+		cd folly
+		git checkout a247c8d
+		cd ../../..
+	fi
+
 	if use debug; then
 		CMAKE_BUILD_TYPE="Debug"
 	else
