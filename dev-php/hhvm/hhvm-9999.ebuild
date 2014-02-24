@@ -62,6 +62,10 @@ fi
 
 src_prepare() {
 	epatch "${FILESDIR}"/libdwarf_location.patch
+
+	# https://github.com/facebook/hhvm/issues/1236
+	epatch "${FILESDIR}"/64bit_mysqlclient.patch
+
 	if [ ! ${PV} = "9999" ]; then
 		epatch "${FILESDIR}"/cmake_oniguruma_avoid_collision.patch
 	fi
