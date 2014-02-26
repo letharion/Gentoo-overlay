@@ -40,6 +40,7 @@ dev-libs/libxml2
 dev-libs/oniguruma
 dev-libs/openssl
 dev-util/google-perftools
+media-gfx/imagemagick
 media-libs/gd[jpeg,png]
 net-libs/c-client[kerberos]
 net-nds/openldap
@@ -62,6 +63,9 @@ fi
 
 src_prepare() {
 	epatch "${FILESDIR}"/libdwarf_location.patch
+
+	# https://github.com/facebook/hhvm/issues/1897
+	epatch "${FILESDIR}"/1897_find_imagemagick.patch
 
 	# https://github.com/facebook/hhvm/issues/1236
 	epatch "${FILESDIR}"/64bit_mysqlclient.patch
