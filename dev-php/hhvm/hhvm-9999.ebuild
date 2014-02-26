@@ -27,7 +27,7 @@ DEPEND="app-arch/bzip2
 dev-cpp/glog
 dev-cpp/tbb
 virtual/mysql
->=dev-libs/boost-1.48
+>=dev-libs/boost-1.49
 dev-libs/cloog-ppl
 dev-libs/elfutils
 dev-libs/icu
