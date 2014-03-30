@@ -76,24 +76,24 @@ src_configure() {
 	export CMAKE_PREFIX_PATH=$(pwd)
 	export LIBRARY_PATH="/usr/include/libdwarf/"
 
-	cd customs
-	git clone git://github.com/libevent/libevent.git
-	cd libevent
-	git checkout release-1.4.14b-stable
-	cat ../../hphp/third_party/libevent-1.4.14.fb-changes.diff | patch -p1
-	./autogen.sh
-	./configure --prefix=$CMAKE_PREFIX_PATH
+	cd customs || die
+	git clone git://github.com/libevent/libevent.git || die
+	cd libevent || die
+	git checkout release-1.4.14b-stable  || die
+	cat ../../hphp/third_party/libevent-1.4.14.fb-changes.diff | patch -p1 || die
+	./autogen.sh || die
+	./configure --prefix=$CMAKE_PREFIX_PATH || die
 	make
 	make install
-	cd ../..
+	cd ../.. || die
 
 	if [ ! ${PV} = "9999" ]; then
 		# Get folly. Move folly to a separate package later.
 		cd hphp/submodules || die
-		git clone https://github.com/facebook/folly.git
-		cd folly
-		git checkout a247c8d
-		cd ../../..
+		git clone https://github.com/facebook/folly.git || die
+		cd folly || die
+		git checkout a247c8d || die
+		cd ../../.. || die
 	fi
 
 	if use debug; then
