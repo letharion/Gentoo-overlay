@@ -21,7 +21,7 @@ fi
 LICENSE="PHP-3.01"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE="debug"
+IUSE="debug imagemagick"
 
 DEPEND="app-arch/bzip2
 dev-cpp/glog
@@ -40,7 +40,7 @@ dev-libs/libxml2
 dev-libs/oniguruma
 dev-libs/openssl
 dev-util/google-perftools
-media-gfx/imagemagick
+imagemagick? ( media-gfx/imagemagick )
 media-libs/gd[jpeg,png]
 net-libs/c-client[kerberos]
 net-nds/openldap
@@ -70,22 +70,8 @@ src_prepare() {
 
 src_configure() {
 	export HPHP_HOME=$(pwd)
-
-	mkdir customs
-
 	export CMAKE_PREFIX_PATH=$(pwd)
 	export LIBRARY_PATH="/usr/include/libdwarf/"
-
-	cd customs || die
-	git clone git://github.com/libevent/libevent.git || die
-	cd libevent || die
-	git checkout release-1.4.14b-stable  || die
-	cat ../../hphp/third_party/libevent-1.4.14.fb-changes.diff | patch -p1 || die
-	./autogen.sh || die
-	./configure --prefix=$CMAKE_PREFIX_PATH || die
-	make
-	make install
-	cd ../.. || die
 
 	if [ ! ${PV} = "9999" ]; then
 		# Get folly. Move folly to a separate package later.
@@ -96,20 +82,14 @@ src_configure() {
 		cd ../../.. || die
 	fi
 
+	CMAKE_BUILD_TYPE="Release"
 	if use debug; then
 		CMAKE_BUILD_TYPE="Debug"
-	else
-		CMAKE_BUILD_TYPE="Release"
 	fi
 
 	cmake-utils_src_configure
 }
 
 src_install() {
-	dobin "${FILESDIR}"/hhvm
-	exeinto /usr/share/hhvm
-	doexe hphp/hhvm/hhvm
-
-	insinto /usr/share/hhvm
-	doins lib/libevent-1.4.so.2*
+	dobin hphp/hhvm/hhvm
 }
