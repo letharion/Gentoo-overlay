@@ -71,16 +71,16 @@ src_configure() {
 	export CMAKE_PREFIX_PATH=$(pwd)
 	export LIBRARY_PATH="/usr/include/libdwarf/"
 
-	if [ ! ${PV} = "9999" ]; then
+	if [ ${PV} = "9999" ]; then
+		cd third-party/folly
+		git submodule update --init --recursive
+	else
 		# Get folly. Move folly to a separate package later.
 		cd hphp/submodules || die
 		git clone https://github.com/facebook/folly.git || die
 		cd folly || die
 		git checkout ${FOLLY_VERSION} || die
 		cd ../../.. || die
-	else
-		cd third-party/folly
-		git submodule update --init --recursive
 	fi
 
 	CMAKE_BUILD_TYPE="Release"
