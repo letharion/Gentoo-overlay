@@ -54,6 +54,7 @@ sys-libs/zlib"
 
 RDEPEND="${DEPEND}"
 CMAKE_IN_SOURCE_BUILD="true"
+FOLLY_VERSION=b215baa
 
 if [ ${PV} = "9999" ]; then
 	S="${WORKDIR}/hhvm-${PV}"
@@ -63,9 +64,6 @@ fi
 
 src_prepare() {
 	epatch "${FILESDIR}"/libdwarf_location.patch
-
-	# https://github.com/facebook/hhvm/issues/1236
-	epatch "${FILESDIR}"/64bit_mysqlclient.patch
 }
 
 src_configure() {
@@ -73,12 +71,15 @@ src_configure() {
 	export CMAKE_PREFIX_PATH=$(pwd)
 	export LIBRARY_PATH="/usr/include/libdwarf/"
 
-	if [ ! ${PV} = "9999" ]; then
+	if [ ${PV} = "9999" ]; then
+		cd third-party/folly
+		git submodule update --init --recursive
+	else
 		# Get folly. Move folly to a separate package later.
 		cd hphp/submodules || die
 		git clone https://github.com/facebook/folly.git || die
 		cd folly || die
-		git checkout d9c79af || die
+		git checkout ${FOLLY_VERSION} || die
 		cd ../../.. || die
 	fi
 

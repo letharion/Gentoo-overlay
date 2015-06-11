@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+ 
+<repositories version="1.0">
+	<repo priority="50" quality="experimental" status="unofficial">
+		<name><![CDATA[letharion-overlay]]></name>
+		<description>Various ebuilds.</description>
+		<homepage>https://github.com/letharion/Gentoo-overlay</homepage>
+		<owner>
+			<email>letharion@gmail.org</email>
+		</owner>
+		<source type="git">https://github.com/letharion/Gentoo-overlay.git</source>
+	</repo>
+</repositories>
