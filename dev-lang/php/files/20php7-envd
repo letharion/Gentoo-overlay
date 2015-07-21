@@ -1,2 +1,0 @@
-MANPATH="/usr/lib/php7/man/"
-CONFIG_PROTECT_MASK="/etc/php/cli-php7/ext-active/ /etc/php/cgi-php7/ext-active/ /etc/php/apache2-php7/ext-active/"
