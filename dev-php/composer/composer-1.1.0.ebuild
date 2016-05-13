@@ -5,8 +5,8 @@
 EAPI=5
 
 DESCRIPTION="Composer is a PHP package manager"
-HOMEPAGE="http://getcomposer.org"
-SRC_URI="http://getcomposer.org/download/${PV/_/-}/${PN}.phar -> ${P}.phar"
+HOMEPAGE="https://getcomposer.org/"
+SRC_URI="https://getcomposer.org/download/${PV/_/-}/${PN}.phar -> ${P}.phar"
 
 LICENSE=""
 SLOT="0"
