@@ -3,7 +3,7 @@
 
 EAPI=7
 
-USE_PHP="php7-2 php7-3 php7-4"
+USE_PHP="php7-3 php7-4 php8-0"
 PHP_EXT_NAME="ast"
 #PHP_EXT_INIT="yes"
 #PHP_EXT_ZENDEXT="no"
